@@ -20,6 +20,7 @@ services:
     environment:
       MINIO_ROOT_USER: ${AWS_ACCESS_KEY_ID}
       MINIO_ROOT_PASSWORD: ${AWS_SECRET_ACCESS_KEY}
+      MINIO_REGION: ${AWS_REGION}
     healthcheck:
       test: [ "CMD", "curl", "-f", "http://localhost:9000/minio/health/live" ]
       interval: 30s
@@ -27,6 +28,7 @@ services:
       retries: 3
     volumes:
     - ./data/mlflow/minio/:/data
+    - ./Makefile:/home/Makefile:ro
 
   nginx:
     image: nginx:1.19.2-alpine
@@ -91,3 +93,37 @@ services:
     depends_on:
     - nginx
     - postgresql
+
+  ml_model_cpu:
+    build: ./ml_model
+    container_name: ml_model_cpu
+    networks:
+    - ml_logging
+    - s3
+    volumes:
+    - ./ml_model/config:/app/ml_model/config
+    - ./ml_model/data:/app/ml_model/data
+    - ./ml_model/logs:/app/ml_model/logs
+    - ./ml_model/utils:/app/ml_model/utils
+    # - ~/.aws/:/root/.aws:ro # If AWS credentials need to be passed, or use environment
+    environment:
+    - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
+    - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
+    - MLFLOW_S3_ENDPOINT_URL=http://nginx:9000
+    command: sh -c "tail -f /dev/null"
+    # command: conda run --no-capture-output -n ml_model python train.py
+  mlflow_test:
+    build: ./Docker/dockerfiles/cpu
+    container_name: mlflow_test
+    networks:
+    - ml_logging
+    - s3
+    volumes:
+    - ./Docker/dockerfiles/mlflow/mlflow_test.py:/app/ml_model/mlflow_test.py
+    environment:
+    - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
+    - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
+    - MLFLOW_S3_ENDPOINT_URL=http://nginx:9000
+    command: conda run --no-capture-output -n ml_model python mlflow_test.py --alpha=0.5 --l1-ratio=0.8
+    depends_on:
+    - mlflow
