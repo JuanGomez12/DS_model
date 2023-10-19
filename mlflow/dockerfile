@@ -1,4 +1,4 @@
-FROM python:3.11.6-slim
+FROM python:3.11.6
 # The python and mlflow versions between the MLflow server and training
 # container need to match
 RUN pip install mlflow boto3 psycopg2
