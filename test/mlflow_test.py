@@ -5,13 +5,14 @@
 import argparse
 import warnings
 
-import mlflow
 import mlflow.sklearn
 import numpy as np
 from sklearn.datasets import load_wine
 from sklearn.linear_model import ElasticNet
 from sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score
 from sklearn.model_selection import train_test_split
+
+import mlflow
 
 mlflow.set_tracking_uri("http://mlflow_server:5000")
 mlflow.set_experiment("mlflow-test-wine")
