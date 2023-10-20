@@ -1,0 +1,8 @@
+paths:
+ input_path: data/input
+ output_path: data/output
+
+mlflow:
+  log_input_examples: False
+  max_tuning_runs: null
+  log_models: False
