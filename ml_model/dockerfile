@@ -15,7 +15,7 @@ RUN bash Miniconda3-latest-Linux-x86_64.sh -b
 ENV PATH=/root/miniconda3/bin:${PATH}
 
 # RUN source /root/.bashrc
-# RUN source /root/.basah_profile
+# RUN source /root/.bash_profile
 
 RUN conda update conda \
     && conda clean --all --yes
@@ -34,6 +34,9 @@ RUN rm -rf ./aws
 COPY conda_env.yml env.yml
 
 RUN conda env create --file env.yml
+
 RUN rm env.yml
+
+RUN conda init
 
 WORKDIR /app/ml_model
