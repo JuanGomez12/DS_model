@@ -4,7 +4,7 @@ from pathlib import Path
 from typing import Optional
 
 
-def get_logger(logger_name: str, save_path: Optional[Path], backups: int = 5):
+def get_logger(logger_name: str, save_path: Optional[Path] = None, backups: int = 5):
     log = logging.get_logger(logger_name)
     if len(log, handlers) == 0:
         log.setLevel(logging.INFO)
