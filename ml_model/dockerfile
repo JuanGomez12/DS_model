@@ -1,0 +1,42 @@
+FROM python:3.11.6
+# FROM osgeo/gdal:ubuntu-full-3.6.3 # Already has GDAL preinstalled and configured, saves headaches
+
+RUN apt-get update -y \
+    && apt-get upgrade -y \
+    && apt-get install -y wget build-essential htop \
+    && apt-get install -y screen nano graphviz git
+
+
+# Install Conda env manager using Miniconda
+RUN wget https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh
+
+RUN bash Miniconda3-latest-Linux-x86_64.sh -b
+
+ENV PATH=/root/miniconda3/bin:${PATH}
+
+# RUN source /root/.bashrc
+# RUN source /root/.bash_profile
+
+RUN conda update conda \
+    && conda clean --all --yes
+
+# Install AWS tools
+RUN curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+RUN unzip awscliv2.zip
+RUN ./aws/install
+
+# Cleanup
+RUN rm Miniconda3-latest-Linux-x86_64.sh
+RUN rm awscliv2.zip
+RUN rm -rf ./aws
+
+# Install conda env
+COPY conda_env.yml env.yml
+
+RUN conda env create --file env.yml
+
+RUN rm env.yml
+
+RUN conda init
+
+WORKDIR /app/ml_model
