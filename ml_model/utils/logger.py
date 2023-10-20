@@ -21,6 +21,8 @@ def get_logger(logger_name: str, save_path: Optional[Path] = None, backups: int 
             fh = handlers.RotatingFileHandler(save_path, maxBytes=(1048576 * 5), backupCount=backups)
             fh.setFormatter(format)
             log.addHandler(fh)
+        elif save_path is None:
+            log.warning("Logger not saving to file")
         elif save_path is not None:
             raise TypeError(f"save_path needs to be either a pathlib.Path or None, got {type(save_path)}")
     return log
