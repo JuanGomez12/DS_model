@@ -102,10 +102,7 @@ services:
     - ml_logging
     - s3
     volumes:
-    - ./ml_model/config:/app/ml_model/config
-    - ./ml_model/data:/app/ml_model/data
-    - ./ml_model/logs:/app/ml_model/logs
-    - ./ml_model/utils:/app/ml_model/utils
+    - ./ml_model:/app/ml_model
     # - ~/.aws/:/root/.aws:ro # If AWS credentials need to be passed, or use environment
     environment:
     - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
