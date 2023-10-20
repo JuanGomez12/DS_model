@@ -8,10 +8,10 @@ YELLOW="\033[00;93m"
 CYAN="\e[0;96m"
 GREY="\e[2:N"
 
-create_ml_model_bucket:
+create_mlflow_bucket:
 # To be run inside MinIO
-	mc alias set s3  http://localhost:9000 $MINIO_ROOT_USER $MINIO_ROOT_PASSWORD
-	mc mb s3/ml_model --ignore-existing --region $MINIO_REGION
+	mc alias set s3 http://localhost:9000 $MINIO_ROOT_USER $MINIO_ROOT_PASSWORD
+	mc mb s3/$AWS_S3_BUCKET_NAME --ignore-existing --region $MINIO_REGION
 
 test_debug:
 	conda run --no--capture--output -n test coverage_run -m pytest
