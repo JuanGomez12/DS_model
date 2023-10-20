@@ -21,6 +21,7 @@ services:
       MINIO_ROOT_USER: ${AWS_ACCESS_KEY_ID}
       MINIO_ROOT_PASSWORD: ${AWS_SECRET_ACCESS_KEY}
       MINIO_REGION: ${AWS_REGION}
+      AWS_S3_BUCKET_NAME: ${AWS_S3_BUCKET_NAME}
     healthcheck:
       test: [ "CMD", "curl", "-f", "http://localhost:9000/minio/health/live" ]
       interval: 30s
@@ -112,14 +113,15 @@ services:
     - MLFLOW_S3_ENDPOINT_URL=http://nginx:9000
     command: sh -c "tail -f /dev/null"
     # command: conda run --no-capture-output -n ml_model python train.py
+
   mlflow_test:
-    build: ./Docker/dockerfiles/cpu
+    build: ./ml_model
     container_name: mlflow_test
     networks:
     - ml_logging
     - s3
     volumes:
-    - ./Docker/dockerfiles/mlflow/mlflow_test.py:/app/ml_model/mlflow_test.py
+    - ./test/mlflow_test.py:/app/ml_model/mlflow_test.py
     environment:
     - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
     - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
@@ -127,3 +129,28 @@ services:
     command: conda run --no-capture-output -n ml_model python mlflow_test.py --alpha=0.5 --l1-ratio=0.8
     depends_on:
     - mlflow
+
+  gpu_capable:
+    build:
+      context: ./Docker/dockerfiles/gpu
+    networks:
+    - ml_logging
+    - s3
+    volumes:
+    - ./ml_model/config:/app/ml_model/config
+    - ./ml_model/data:/app/ml_model/data
+    - ./ml_model/logs:/app/ml_model/logs
+    - ./ml_model/utils:/app/ml_model/utils
+    # - ~/.aws/:/root/.aws:ro # If AWS credentials need to be passed, or use environment
+    environment:
+    - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
+    - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
+    - MLFLOW_S3_ENDPOINT_URL=http://nginx:9000
+    command: >
+      sh -c "tail -f /dev/null"
+    deploy:
+      resources:
+        reservations:
+          devices:
+          - capabilities: ["nvidia-compute"]
+            driver: nvidia
