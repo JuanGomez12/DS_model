@@ -6,3 +6,11 @@ mlflow:
   log_input_examples: False
   max_tuning_runs: null
   log_models: False
+
+modeling:
+  test_size: 0.2
+  random_seed: 42
+  features:
+    features_to_drop: null
+  # Either STANDARDIZE or NORMALIZE. Case insensitive
+  normalization_method: STANDARDIZE
