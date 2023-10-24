@@ -1,15 +1,13 @@
 from pathlib import Path
 
 from modeling.data_preprocessor import DataPreprocessor
-from sklearn.compose import ColumnTransformer
-from sklearn.compose import make_column_selector as selector
+from modeling.pipeline import ProcessingPipeline
 from sklearn.datasets import load_diabetes
-from sklearn.impute import SimpleImputer
 from sklearn.model_selection import train_test_split
 from sklearn.pipeline import Pipeline
-from sklearn.preprocessing import MinMaxScaler, OneHotEncoder, StandardScaler
 from utils.load_config import load_config_file
 from utils.logger import get_logger
+from xgboost import XGBRegressor
 
 import mlflow  # Pre-commit keeps thinking it's an local import
 
@@ -47,36 +45,22 @@ with mlflow.start_run():
 
     data_preprocessor = DataPreprocessor()
 
-    # Create the preprocessing pipeline
-    if modeling_config["normalization_method"].lower() == "standardize":
-        scaler = StandardScaler()
-    elif modeling_config["normalization_method"].lower() == "normalize":
-        scaler = MinMaxScaler()
-    else:
-        raise ValueError("Normalization method not recognized")
+    processing_pipeline = ProcessingPipeline(modeling_config)
 
-    numeric_transformer = Pipeline(steps=[("imputer", SimpleImputer(strategy="mean")), ("scaler", scaler)])
-
-    categoric_transformer = Pipeline(
-        steps=[
-            ("imputer", SimpleImputer(strategy="constant", fill_value="Unavailable")),
-            ("onehot", OneHotEncoder(handle_unknown="ignore")),
+    estimator = XGBRegressor(**modeling_config["estimator"])
+    pipeline = Pipeline(
+        [
+            ("data_preprocessor", data_preprocessor),
+            ("processing_pipeline", processing_pipeline),
+            ("estimator", estimator),
         ]
     )
 
-    preprocessor = ColumnTransformer(
-        transformers=[
-            (
-                "num",
-                numeric_transformer,
-                selector(dtype_exclude=["category", "object"]),
-            ),
-            (
-                "cat",
-                categoric_transformer,
-                selector(dtype_include=["category", "object"]),
-            ),
-        ],
-        remainder="drop",
-        sparse_threshold=0,  # XGB doesn't play well with sparse matrices
-    )
+    # Training
+    pipeline.fit(X_train, y_train)
+
+    if config["results"]:
+        # plot and results
+        px.scatter()
+
+    # Register model

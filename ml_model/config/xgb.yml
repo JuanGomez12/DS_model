@@ -14,3 +14,6 @@ modeling:
     features_to_drop: null
   # Either STANDARDIZE or NORMALIZE. Case insensitive
   normalization_method: STANDARDIZE
+  estimator:
+    random_state: 42
+    n_estimators: 2000
