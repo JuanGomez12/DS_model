@@ -32,7 +32,11 @@ mlflow.set_tracking_uri("http://mlflow_server:5000")
 mlflow.set_experiment(EXPERIMENT_NAME)
 
 # Enable autologging
-mlflow.sklearn.autolog(**config["mlflow"])
+mlflow.sklearn.autolog(
+    log_input_examples=config["mlflow"]["log_input_examples"],
+    max_tuning_runs=config["mlflow"]["max_tuning_runs"],
+    log_models=config["mlflow"]["log_models"],
+)
 
 with mlflow.start_run():
     diabetes_data = load_diabetes(return_X_y=True, as_frame=True)
@@ -61,7 +65,7 @@ with mlflow.start_run():
     pipeline = Pipeline(
         [
             ("data_preprocessor", data_preprocessor),
-            ("processing_pipeline", processing_pipeline),
+            ("processing_pipeline", processing_pipeline.preprocessor),
             ("estimator", estimator),
         ]
     )
@@ -92,12 +96,13 @@ with mlflow.start_run():
         },
         title="Predicted vs actual values by age",
         width=plot_config["width"],
-        height=plot_config["heigth"],
+        height=plot_config["height"],
     )
-    fig.add_trace(go.scatter(x=y_test, y=y_test, mode="lines", name="Perfect Prediction", secondary_y=False))
+    fig.add_trace(go.Scatter(x=y_test, y=y_test, mode="lines", name="Perfect Prediction"), secondary_y=False)
+    fig.update_layout(coloraxis=dict(colorbar=dict(orientation="h", y=-0.22)))
 
     # Save plot
-    log_figure(mlflow, fig, "Predicted_vs_Actual_plot.png", width=plot_config["width"], height=plot_config["heigth"])
+    log_figure(mlflow, fig, "Predicted_vs_Actual_plot.png", width=plot_config["width"], height=plot_config["height"])
 
     # Save model to file
     model_save_path = config["paths"]["output_path"] / "xgb" / f"xgb_{datetime.datetime.now().date()}.pkl"
@@ -106,7 +111,7 @@ with mlflow.start_run():
 
     # Register model
     # Here we could add logic to register model or not depending on previous iteration's results for example
-    # This step can also be performed manually on the mlflow dashboard
+    # This step can also be instead performed manually on the mlflow dashboard, looking at the metrics, parameters, etc
     if config["mlflow"]["auto_log_model"]:
         logger.info("Registering model")
         signature = infer_signature(X_test, y_pred)
@@ -114,6 +119,7 @@ with mlflow.start_run():
             sk_model=pipeline,
             artifact_path=EXPERIMENT_NAME,
             signature=signature,
-            registered_model_name=f"xgb_{datetime.datetime.now().date()}",
+            registered_model_name=f"XGB",
             input_example=X_test.sample(3),
         )
+    logger.info("Done training model")
