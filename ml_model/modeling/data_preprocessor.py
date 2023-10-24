@@ -49,4 +49,5 @@ class DataPreprocessor(BaseEstimator, TransformerMixin):
     def clean_data(self, X: ndarray) -> ndarray:
         if self.features_to_drop is not None:
             X = X.drop(columns=self.features_to_drop)
+        # Extra data cleaning goes here
         return X
