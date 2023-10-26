@@ -16,6 +16,7 @@ from utils.logger import get_logger
 from utils.mlflow_utils import log_figure
 from xgboost import XGBRegressor
 
+# from sklearn.feature_selection import VarianceThreshold
 import mlflow  # Pre-commit keeps thinking it's a local import
 
 logger = get_logger(Path(__file__).stem)
@@ -65,6 +66,7 @@ with mlflow.start_run():
     pipeline = Pipeline(
         [
             ("data_preprocessor", data_preprocessor),
+            # ("feature_selector", VarianceThreshold()),
             ("processing_pipeline", processing_pipeline.preprocessor),
             ("estimator", estimator),
         ]
