@@ -43,10 +43,14 @@ class DataVisualizer:
         return fig
 
     def save_xgb_tree_to_file(
-        image_save_path: Union[Path, str], xgb_estimator: XGBRegressor, num_trees: int, fmap_save_path: Union[Path, str]
+        image_save_path: Union[Path, str],
+        xgb_estimator: XGBRegressor,
+        num_trees: int,
+        fmap_save_path: Union[Path, str],
+        dpi: int = 250,
     ):
         image = to_graphviz(xgb_estimator, num_trees=num_trees, fmap=str(fmap_save_path), rankdir="LR")
-        image.graph_attr = {"dpi": "300"}
-        image_save_path = Path(image_save_path).with_suffix(".png")
-        image.render(image_save_path, format="png")
+        image.graph_attr = {"dpi": str(dpi)}
+        image_save_path = Path(image_save_path).with_suffix("")  # Rendering adds the png suffix
+        image_save_path = image.render(str(image_save_path), format="png")
         return image_save_path
