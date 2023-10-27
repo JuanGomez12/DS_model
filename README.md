@@ -4,7 +4,8 @@ Playground for messing around with different Data Science related tools
 Currently:
 - Pre-commit hooks already set up.
 - Containerized using Docker.
-- Incorporates MLflow using MinIO for replacement of AWS S3 for storing MLflow objects.
+- Incorporates MLflow for managing the machine learning lifecycle including model development, registry, and deployment, and experiment tracking.
+- Uses MinIO to replace AWS S3 for storing MLflow objects.
 
 ## Machine Learning Modeling
 ![XGB pipeline example](ml_model/images/XGB_pipeline_example.png)
