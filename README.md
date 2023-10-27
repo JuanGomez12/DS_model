@@ -6,6 +6,8 @@ Currently:
 - Containerized using Docker and orchestrated using Docker Compose.
 - Incorporates MLflow for managing the machine learning lifecycle including model development, registry, and deployment, and experiment tracking.
 - Uses MinIO to replace AWS S3 for storing MLflow objects.
+- Deployed using the FastAPI web framework
+- Option of training models on CPU or GPU
 
 ## Machine Learning Modeling
 ![XGB pipeline example](ml_model/images/XGB_pipeline_example.png)
@@ -34,6 +36,9 @@ Uses MLflow for maintaining the machine learning lifecycle, including:
 ![MinIO run locally](mlflow/images/MinIO%20local%20run.png)
 
 Creates and runs a MinIO server locally for storing S3 artifacts. It uses nginx as a reverse proxy.
+
+## FastAPI
+Web framework used to deploy the machine learning models. RESTful API to handle model prediction requests.
 
 ## Docker Compose
 Defines the multi-container application to spin up or tear down all services with a single command. Services include:
