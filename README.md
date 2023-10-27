@@ -3,7 +3,7 @@ Playground for messing around with different Data Science related tools
 
 Currently:
 - Pre-commit hooks already set up.
-- Containerized using Docker.
+- Containerized using Docker and orchestrated using Docker Compose.
 - Incorporates MLflow for managing the machine learning lifecycle including model development, registry, and deployment, and experiment tracking.
 - Uses MinIO to replace AWS S3 for storing MLflow objects.
 
@@ -34,3 +34,13 @@ Uses MLflow for maintaining the machine learning lifecycle, including:
 ![MinIO run locally](mlflow/images/MinIO%20local%20run.png)
 
 Creates and runs a MinIO server locally for storing S3 artifacts. It uses nginx as a reverse proxy.
+
+## Docker Compose
+Defines the multi-container application to spin up or tear down all services with a single command. Services include:
+- MLflow server
+- MinIO server
+- nginx for reverse proxying of MLflow AWS calls to MinIO.
+- PostgreSQL
+- pgadmin
+- training service based on CPU
+- training service based on GPU
