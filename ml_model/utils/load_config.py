@@ -24,4 +24,7 @@ def load_config_file(config_path: Path, logger: Optional[logging.Logger] = loggi
     if logger is not None:
         logger.info("Config loaded")
         logger.info(f"{pformat(config)}")
+    if "paths" in config:
+        for path in config["paths"].keys():
+            config["paths"][path] = Path(config["paths"][path])
     return config

@@ -95,9 +95,9 @@ services:
     - nginx
     - postgresql
 
-  ml_model_cpu:
+  ml_model_dev_cpu:
     build: ./ml_model
-    container_name: ml_model_cpu
+    container_name: ml_model_dev_cpu
     networks:
     - ml_logging
     - s3
@@ -109,7 +109,25 @@ services:
     - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
     - MLFLOW_S3_ENDPOINT_URL=http://nginx:9000
     command: sh -c "tail -f /dev/null"
-    # command: conda run --no-capture-output -n ml_model python train.py
+    depends_on:
+      - mlflow
+
+  ml_model_train_cpu:
+    build: ./ml_model
+    container_name: ml_model_train_cpu
+    networks:
+    - ml_logging
+    - s3
+    volumes:
+    - ./ml_model:/app/ml_model
+    # - ~/.aws/:/root/.aws:ro # If AWS credentials need to be passed, or use environment
+    environment:
+    - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
+    - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
+    - MLFLOW_S3_ENDPOINT_URL=http://nginx:9000
+    command: conda run --no-capture-output -n ml_model python train.py
+    depends_on:
+     - mlflow
 
   mlflow_test:
     build: ./ml_model

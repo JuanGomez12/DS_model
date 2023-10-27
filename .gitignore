@@ -163,4 +163,5 @@ cython_debug/
 data/
 
 # VS Code specific configuration
+*/.vscode/settings.json
 .vscode/settings.json

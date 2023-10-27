@@ -14,8 +14,10 @@ dependencies:
   - aws-checksums=0.1.11=h5eee18b_2
   - aws-sdk-cpp=1.8.185=h721c034_1
   - bcrypt=4.0.1=py311h46250e7_1
+  - blas=1.0=openblas
   - blinker=1.6.3=pyhd8ed1ab_0
   - boost-cpp=1.82.0=h44aadfe_6
+  - bottleneck=1.3.5=py311hbed6279_0
   - brotli=1.0.9=h166bdaf_9
   - brotli-bin=1.0.9=h166bdaf_9
   - brotli-python=1.0.9=py311ha362b79_9
@@ -35,7 +37,14 @@ dependencies:
   - docker-py=6.1.3=pyhd8ed1ab_0
   - entrypoints=0.4=pyhd8ed1ab_0
   - exceptiongroup=1.1.3=pyhd8ed1ab_0
+  - expat=2.5.0=hcb278e6_1
   - flask=2.3.3=pyhd8ed1ab_0
+  - font-ttf-dejavu-sans-mono=2.37=hab24e00_0
+  - font-ttf-inconsolata=3.000=h77eed37_0
+  - font-ttf-source-code-pro=2.038=h77eed37_0
+  - font-ttf-ubuntu=0.83=hab24e00_0
+  - fontconfig=2.14.2=h14ed4e7_0
+  - fonts-conda-forge=1=0
   - fonttools=4.43.1=py311h459d7ec_0
   - freetype=2.12.1=h267a509_2
   - gflags=2.2.2=he1b5a44_1004
@@ -52,6 +61,7 @@ dependencies:
   - itsdangerous=2.1.2=pyhd8ed1ab_0
   - jinja2=3.1.2=pyhd8ed1ab_1
   - joblib=1.3.2=pyhd8ed1ab_0
+  - kaleido-core=0.2.1=h3644ca4_0
   - keyutils=1.6.1=h166bdaf_0
   - kiwisolver=1.4.5=py311h9547e67_1
   - krb5=1.21.2=h659d440_0
@@ -99,18 +109,26 @@ dependencies:
   - mako=1.2.4=pyhd8ed1ab_0
   - markdown=3.5=pyhd8ed1ab_0
   - markupsafe=2.1.3=py311h459d7ec_1
+  - mathjax=2.7.7=ha770c72_3
   - matplotlib-base=3.8.0=py311h54ef318_2
   - munkres=1.1.4=pyh9f0ad1d_0
   - ncurses=6.4=hcb278e6_0
+  - nspr=4.35=h27087fc_0
+  - nss=3.94=h1d7d5a4_0
+  - numexpr=2.8.7=py311h812550d_0
   - numpy=1.26.0=py311h64a7726_0
   - oauthlib=3.2.2=pyhd8ed1ab_0
+  - openblas=0.3.24=pthreads_h7a3da1a_0
   - openjpeg=2.5.0=h488ebb8_3
-  - openssl=3.1.3=hd590300_0
+  - openssl=3.1.4=hd590300_0
   - orc=1.7.4=hb3bc3d3_1
   - packaging=23.2=pyhd8ed1ab_0
+  - pandas=2.1.1=py311ha02d727_0
   - paramiko=3.3.1=pyhd8ed1ab_0
+  - patsy=0.5.3=py311h06a4308_0
   - pillow=10.1.0=py311ha6c5da5_0
   - pip=23.3=pyhd8ed1ab_0
+  - plotly=5.9.0=py311h06a4308_0
   - pluggy=1.3.0=pyhd8ed1ab_0
   - prometheus_client=0.17.1=pyhd8ed1ab_0
   - prometheus_flask_exporter=0.22.4=pyhd8ed1ab_0
@@ -124,6 +142,7 @@ dependencies:
   - pytest=7.4.2=pyhd8ed1ab_0
   - python=3.11.6=hab00c5b_0_cpython
   - python-dateutil=2.8.2=pyhd8ed1ab_0
+  - python-kaleido=0.2.1=pyhd8ed1ab_0
   - python-tzdata=2023.3=pyhd8ed1ab_0
   - python_abi=3.11=4_cp311
   - pytz=2023.3.post1=pyhd8ed1ab_0
@@ -140,8 +159,11 @@ dependencies:
   - smmap=3.0.5=pyh44b312d_0
   - snappy=1.1.10=h9fff704_0
   - sqlalchemy=2.0.22=py311h459d7ec_0
+  - sqlite=3.43.2=h2c6b66d_0
   - sqlparse=0.4.4=pyhd8ed1ab_0
+  - statsmodels=0.14.0=py311hf4808d0_0
   - tabulate=0.9.0=pyhd8ed1ab_1
+  - tenacity=8.2.2=py311h06a4308_0
   - threadpoolctl=3.2.0=pyha21a80b_0
   - tk=8.6.13=h2797004_0
   - tomli=2.0.1=pyhd8ed1ab_0
@@ -168,9 +190,9 @@ dependencies:
       - gunicorn==21.2.0
       - jmespath==1.0.1
       - mlflow==2.7.1
-      - pandas==2.1.1
       - protobuf==3.20.3
       - pyarrow==11.0.0
+      - python-graphviz==0.20.1
       - pyyaml==6.0.1
       - s3transfer==0.7.0
 prefix: /root/miniconda3/envs/ml_model
