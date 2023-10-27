@@ -209,4 +209,4 @@ services:
       retries: 3
     depends_on:
     - mlflow
-    command:  conda run --no-capture-output -n fastapi uvicorn main:app --reload
+    command:  conda run --no-capture-output -n fastapi uvicorn main:app --reload --host 0.0.0.0
