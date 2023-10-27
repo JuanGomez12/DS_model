@@ -82,7 +82,8 @@ with mlflow.start_run():
     y_pred = pipeline.predict(X_test)
 
     logger.info("Creating visualizations")
-    # Feature information
+
+    # Feature information and XGB example tree
     with tempfile.TemporaryDirectory() as temp_dir:
         fmap_save_path = Path(temp_dir) / "feature_map.txt"
         fmap = ProcessingPipeline.create_feature_selection_map(
