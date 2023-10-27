@@ -44,6 +44,7 @@ Creates and runs a MinIO server locally for storing S3 artifacts. It uses nginx 
 
 
 ## FastAPI
+![Fast API Docs](<fastapi/images/Fast API Docs.png>)
 Web framework used to deploy the machine learning models. RESTful API to handle model prediction requests.
 
 
