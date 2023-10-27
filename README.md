@@ -1,4 +1,7 @@
 # DS_model
+[![Linting](https://github.com/JuanGomez12/DS_model/actions/workflows/pre-commit.yml/badge.svg?branch=main&event=push)](https://github.com/JuanGomez12/DS_model/actions/workflows/pre-commit.yml)
+[![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)]( https://github.com/psf/black)
+
 Playground for messing around with different Data Science related tools
 
 Currently:
