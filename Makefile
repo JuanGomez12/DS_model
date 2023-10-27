@@ -48,6 +48,7 @@ run_ml_model_local:
 	echo ${GREEN}Done{RESTORE}
 
 deploy_local:
+	cp /d/.dev/test_ds/DS_model/.envs/local/local.env .env
 	make build_project_local
 	make startup_project_local
 	echo ${GREEN} Wait 5 seconds for everything to be set up correctly {RESTORE}
