@@ -7,6 +7,20 @@ Currently:
 - Incorporates MLflow for managing the machine learning lifecycle including model development, registry, and deployment, and experiment tracking.
 - Uses MinIO to replace AWS S3 for storing MLflow objects.
 
+## Running the repository
+In order to run the code correctly, you need to:
+- Clone the repository
+- Run: ```make run_everything_local```
+
+This will:
+- Create the required containers (minio, mlflow server, etc)
+- Create the mlflow bucket in MinIO in order to be able to store MLflow data.
+- Run an instance of the implemented ML model.
+
+What can then be accessed afterwards:
+- MLflow can then be accessed by opening a web browser and pointing it to http://localhost:5000
+- MinIO can be accessed by opening a web browser and accessing http://localhost:9001
+
 
 ## Machine Learning Modeling
 ![XGB pipeline example](ml_model/images/XGB_pipeline_example.png)
