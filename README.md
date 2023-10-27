@@ -49,3 +49,4 @@ Defines the multi-container application to spin up or tear down all services wit
 - pgadmin
 - training service based on CPU
 - training service based on GPU
+- fastapi server
