@@ -38,7 +38,7 @@ build_project_local:
 
 startup_project_local:
 	echo ${GREEN} Building project locally {RESTORE}
-	docker compose --env-file ./.envs/local/local.env up -d minio mlflow
+	docker compose --env-file ./.envs/local/local.env up -d minio mlflow fastapi
 	docker compose --env-file ./.envs/local/local.env run --rm create_buckets
 	echo ${GREEN}Done{RESTORE}
 
@@ -50,4 +50,6 @@ run_ml_model_local:
 deploy_local:
 	make build_project_local
 	make startup_project_local
+	echo ${GREEN} Wait 5 seconds for everything to be set up correctly {RESTORE}
+	sleep 5
 	make run_ml_model_local
