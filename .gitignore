@@ -161,3 +161,7 @@ cython_debug/
 
 # Data directory
 data/
+
+# VS Code settings files
+*/.vscode/settings.json
+.vscode/settings.json
