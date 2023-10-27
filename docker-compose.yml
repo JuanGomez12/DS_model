@@ -185,3 +185,20 @@ services:
           devices:
           - capabilities: ["nvidia-compute"]
             driver: nvidia
+
+  fastapi_server:
+    build:
+      context: ./fastapi
+    networks:
+      - ml_logging
+      - s3
+    volumes:
+    - ./fastapi:/app/fastapi
+    - ./ml_model:/app/fastapi/ml_model
+    environment:
+    - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
+    - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
+    - MLFLOW_S3_ENDPOINT_URL=http://nginx:9000
+    # command:  conda run --no-capture-output -n fastapi uvicorn main:app --reload
+    command: >
+      sh -c "tail -f /dev/null"
