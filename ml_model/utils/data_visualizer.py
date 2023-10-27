@@ -1,10 +1,11 @@
 from pathlib import Path
 from typing import Optional, Union
 
+import matplotlib.pyplot as plt
 import numpy as np
-import plotly as plt
 import plotly.express as px
 import plotly.graph_objects as go
+from matplotlib import figure
 from xgboost import XGBRegressor
 from xgboost import plot_tree as xgb_plot_tree
 from xgboost import to_graphviz
@@ -37,7 +38,17 @@ class DataVisualizer:
         fig.update_layout(coloraxis=dict(colorbar=dict(orientation="h", y=-0.22)))
         return fig
 
-    def plot_xgb_tree(xgb_estimator: XGBRegressor, num_trees: int, fmap_save_path: Union[Path, str]):
+    def plot_xgb_tree(xgb_estimator: XGBRegressor, num_trees: int, fmap_save_path: Union[Path, str]) -> figure:
+        """Plots and XGBoost tree using matplotlib's plotly.
+
+        Args:
+            xgb_estimator (XGBRegressor): XGBoost estimator.
+            num_trees (int): Number of the tree to plot.
+            fmap_save_path (Union[Path, str]): File path to the feature map.
+
+        Returns:
+            figure: XGB tree figure.
+        """
         fig, ax = plt.subplots(figsize=(30, 30), dpi=300)
         xgb_plot_tree(xgb_estimator, num_trees=num_trees, ax=ax, fmap=str(fmap_save_path), rankdir="LR")
         return fig
