@@ -145,6 +145,22 @@ services:
     depends_on:
     - mlflow
 
+  test:
+    build: ./test
+    container_name: test
+    # networks:
+    # - ml_logging
+    # - s3
+    volumes:
+    - ./:/ml_model/
+    # environment:
+    # - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
+    # - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
+    # - MLFLOW_S3_ENDPOINT_URL=http://nginx:9000
+    command: sh -c "tail -f /dev/null"
+    # depends_on:
+    # - mlflow
+
   gpu_capable:
     build:
       context: ./Docker/dockerfiles/gpu
