@@ -3,9 +3,11 @@ paths:
  output_path: data/output
 
 mlflow:
+  experiment_name: XGB
   log_input_examples: False
   max_tuning_runs: null
   log_models: False
+  auto_log_model: True
 
 modeling:
   test_size: 0.2
@@ -14,3 +16,10 @@ modeling:
     features_to_drop: null
   # Either STANDARDIZE or NORMALIZE. Case insensitive
   normalization_method: STANDARDIZE
+  estimator:
+    random_state: 42
+    n_estimators: 2000
+
+plot_config:
+  width: 1280
+  height: 768
