@@ -31,6 +31,26 @@ services:
     - ./data/mlflow/minio/:/data
     - ./Makefile:/home/Makefile:ro
 
+  create_buckets:
+    image: minio/minio:latest
+    volumes:
+    - ./data/mlflow/minio/:/data
+    networks:
+      - s3
+    depends_on:
+      - minio
+    # echoed lines are left intentionally, the docs aren't very informative and it's good
+    # to know what we have available for something like this
+    entrypoint: >
+      /bin/sh -c "
+      echo mc config host add aws http://minio:9000 ${AWS_ACCESS_KEY_ID} ${AWS_SECRET_ACCESS_KEY};
+      mc alias set s3 http://minio:9000 ${AWS_ACCESS_KEY_ID} ${AWS_SECRET_ACCESS_KEY};
+      echo /usr/bin/mc rm -r --force myminio/somebucketname;
+      mc mb s3/${AWS_S3_BUCKET_NAME} --ignore-existing --region ${AWS_REGION};
+      echo /usr/bin/mc policy download myminio/somebucketname;
+      exit 0;
+      "
+
   nginx:
     image: nginx:1.19.2-alpine
     container_name: nginx
