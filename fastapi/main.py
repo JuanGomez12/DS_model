@@ -55,7 +55,7 @@ def read_root():
     return {"Basic FastAPI API"}
 
 
-@app.post("/{ml_model}/{model_version}/predict")
+@app.post("/{ml_model}/{model_version}/predict_diabetes")
 async def predict_diabetes(ml_model: str, model_version: str, diabetes_data: DiabetesData) -> dict:
     """Retrieves an ML model with a specific version, in order to the risk of diabetes.
 
