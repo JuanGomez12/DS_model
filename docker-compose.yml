@@ -208,6 +208,3 @@ services:
     depends_on:
     - mlflow
     command:  conda run --no-capture-output -n fastapi uvicorn main:app --reload
-
-    # command: >
-      # sh -c "tail -f /dev/null"
