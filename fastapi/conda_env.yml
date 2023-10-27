@@ -179,5 +179,6 @@ dependencies:
       - websockets==12.0
       - werkzeug==3.0.1
       - widgetsnbextension==4.0.9
+      - xgboost==2.0.1
       - zipp==3.17.0
 prefix: /root/miniconda3/envs/fastapi
