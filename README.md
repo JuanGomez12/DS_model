@@ -10,7 +10,7 @@ Currently:
 ## Running the repository
 In order to run the code correctly, you need to:
 - Clone the repository
-- Run: ```make run_everything_local```
+- Run: ```make deploy_local```
 
 This will:
 - Create the required containers (minio, mlflow server, etc)
