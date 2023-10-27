@@ -200,6 +200,14 @@ services:
     - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
     - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
     - MLFLOW_S3_ENDPOINT_URL=http://nginx:9000
-    # command:  conda run --no-capture-output -n fastapi uvicorn main:app --reload
-    command: >
-      sh -c "tail -f /dev/null"
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:8000/health" ]
+      interval: 30s
+      timeout: 20s
+      retries: 3
+    depends_on:
+    - mlflow
+    command:  conda run --no-capture-output -n fastapi uvicorn main:app --reload
+
+    # command: >
+      # sh -c "tail -f /dev/null"
