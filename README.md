@@ -25,6 +25,7 @@ This will:
 What can then be accessed afterwards:
 - MLflow can then be accessed by opening a web browser and pointing it to http://localhost:5000
 - MinIO can be accessed by opening a web browser and accessing http://localhost:9001
+- FastAPI API for predicting using the implemented ML model can be accessed through http://localhost:8000. The documentation for it can be accessed in http://localhost:8000/docs or http://localhost:8000/redoc
 
 
 ## Machine Learning Modeling
