@@ -1,22 +1,22 @@
 import datetime
+import tempfile
 import time
 from pathlib import Path
 
-import plotly.express as px
-import plotly.graph_objects as go
 from joblib import dump
 from mlflow.models.signature import infer_signature
 from modeling.data_preprocessor import DataPreprocessor
 from modeling.pipeline import ProcessingPipeline
 from sklearn.datasets import load_diabetes
+from sklearn.feature_selection import VarianceThreshold
 from sklearn.model_selection import train_test_split
 from sklearn.pipeline import Pipeline
+from utils.data_visualizer import DataVisualizer
 from utils.load_config import load_config_file
 from utils.logger import get_logger
-from utils.mlflow_utils import log_figure
+from utils.mlflow_utils import log_plotly_figure
 from xgboost import XGBRegressor
 
-# from sklearn.feature_selection import VarianceThreshold
 import mlflow  # Pre-commit keeps thinking it's a local import
 
 logger = get_logger(Path(__file__).stem)
@@ -66,8 +66,8 @@ with mlflow.start_run():
     pipeline = Pipeline(
         [
             ("data_preprocessor", data_preprocessor),
-            # ("feature_selector", VarianceThreshold()),
             ("processing_pipeline", processing_pipeline.preprocessor),
+            ("feature_selector", VarianceThreshold()),
             ("estimator", estimator),
         ]
     )
@@ -76,35 +76,50 @@ with mlflow.start_run():
     train_time_start = time.time()
     pipeline.fit(X_train, y_train)
     train_time_end = time.time()
-    logger.info(f"Model ttaining time: {train_time_end-train_time_start} seconds")
+    logger.info(f"Model training time: {train_time_end-train_time_start} seconds")
 
     # Testing
     y_pred = pipeline.predict(X_test)
 
     logger.info("Creating visualizations")
-    # plot and results
-    fig = px.scatter(
-        x=y_pred,
-        y=y_test,
+    # Feature information
+    with tempfile.TemporaryDirectory() as temp_dir:
+        fmap_save_path = Path(temp_dir) / "feature_map.txt"
+        fmap = ProcessingPipeline.create_feature_selection_map(
+            pipeline=pipeline, feature_selector_name="feature_selector", preprocessor_name="processing_pipeline"
+        )
+        fmap.to_csv(str(fmap_save_path), sep="\t", header=False)
+        mlflow.log_artifact(str(fmap_save_path), "Results")
+
+        image_save_path = Path(temp_dir) / "XGB_tree.png"
+        image_save_path = DataVisualizer.save_xgb_tree_to_file(
+            image_save_path=image_save_path,
+            xgb_estimator=pipeline.named_steps["estimator"],
+            num_trees=0,
+            fmap_save_path=fmap_save_path,
+        )
+        mlflow.log_artifact(image_save_path, "Figures")
+
+    # Predicted vs Actual values Scatterplot
+    fig = DataVisualizer.create_predict_actual_scatter(
+        y_pred=y_pred,
+        y_test=y_test,
         color=X_test["age"],
-        trendline="ols",
-        trendline_scope="overall",
-        trendline_color_override="black",
-        labels={
-            "x": "Predicted value",
-            "y": "Actual value",
-            "color": "Patient Age",
-            "Overall Trendline": "Model Trendline",
-        },
-        title="Predicted vs actual values by age",
+        width=plot_config["width"],
+        height=plot_config["height"],
+        color_label="Patient Age",
+    )
+
+    # Save plot
+    log_plotly_figure(
+        mlflow_instance=mlflow,
+        figure=fig,
+        file_name="Predicted_vs_Actual_plot.png",
         width=plot_config["width"],
         height=plot_config["height"],
     )
-    fig.add_trace(go.Scatter(x=y_test, y=y_test, mode="lines", name="Perfect Prediction"), secondary_y=False)
-    fig.update_layout(coloraxis=dict(colorbar=dict(orientation="h", y=-0.22)))
 
-    # Save plot
-    log_figure(mlflow, fig, "Predicted_vs_Actual_plot.png", width=plot_config["width"], height=plot_config["height"])
+    # XGB info
 
     # Save model to file
     model_save_path = config["paths"]["output_path"] / "xgb" / f"xgb_{datetime.datetime.now().date()}.pkl"
