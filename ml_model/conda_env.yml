@@ -192,7 +192,7 @@ dependencies:
       - mlflow==2.7.1
       - protobuf==3.20.3
       - pyarrow==11.0.0
-      - python-graphviz==0.20.1
+      - graphviz==0.20.1
       - pyyaml==6.0.1
       - s3transfer==0.7.0
 prefix: /root/miniconda3/envs/ml_model
