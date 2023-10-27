@@ -118,6 +118,7 @@ dependencies:
   - numexpr=2.8.7=py311h812550d_0
   - numpy=1.26.0=py311h64a7726_0
   - oauthlib=3.2.2=pyhd8ed1ab_0
+  - openblas=0.3.24=pthreads_h7a3da1a_0
   - openjpeg=2.5.0=h488ebb8_3
   - openssl=3.1.4=hd590300_0
   - orc=1.7.4=hb3bc3d3_1
@@ -191,6 +192,7 @@ dependencies:
       - mlflow==2.7.1
       - protobuf==3.20.3
       - pyarrow==11.0.0
+      - python-graphviz==0.20.1
       - pyyaml==6.0.1
       - s3transfer==0.7.0
 prefix: /root/miniconda3/envs/ml_model
