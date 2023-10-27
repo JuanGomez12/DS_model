@@ -186,9 +186,10 @@ services:
           - capabilities: ["nvidia-compute"]
             driver: nvidia
 
-  fastapi_server:
+  fastapi:
     build:
       context: ./fastapi
+    container_name: fastapi_server
     networks:
       - ml_logging
       - s3
