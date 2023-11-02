@@ -5,6 +5,14 @@ networks:
     driver: bridge
   s3:
     driver: bridge
+  data_management:
+    driver: bridge
+
+volumes:
+  db-data:
+    name: ${DATA_POSTGRES_DB}
+  mlflow-data:
+    name: ${MLFLOW_POSTGRES_DB}
 
 services:
   minio:
@@ -65,24 +73,25 @@ services:
     depends_on:
     - minio
 
-  postgresql:
+  mlflow_postgresql:
     container_name: postgres
     image: postgres
     restart: always
     environment:
-      POSTGRES_USER: ${POSTGRES_USER}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${MLFLOW_POSTGRES_USER}
+      POSTGRES_PASSWORD: ${MLFLOW_POSTGRES_PASSWORD}
+      POSTGRES_DB: ${MLFLOW_POSTGRES_DB}
       PGDATA: /data/postgres
     volumes:
-    - ./data/mlflow/postgres/:/data/postgres
+    # - ./data/mlflow/postgres/:/data/postgres
+    - mlflow-data:/data/postgres
     ports:
     - "5432:5432"
     networks:
     - postgres
 
-  pgadmin:
-    container_name: pgadmin
+  mlflow_pgadmin:
+    container_name: mlflow_pgadmin
     image: dpage/pgadmin4
     restart: always
     environment:
@@ -110,10 +119,10 @@ services:
     - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
     - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
     - MLFLOW_S3_ENDPOINT_URL=http://nginx:9000
-    command: mlflow server --backend-store-uri postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgresql/${POSTGRES_DB} --default-artifact-root s3://${AWS_S3_BUCKET_NAME}/ --host 0.0.0.0
+    command: mlflow server --backend-store-uri mlflow_postgresql://${MLFLOW_POSTGRES_USER}:${MLFLOW_POSTGRES_PASSWORD}@mlflow_postgresql/${MLFLOW_POSTGRES_DB} --default-artifact-root s3://${AWS_S3_BUCKET_NAME}/ --host 0.0.0.0
     depends_on:
     - nginx
-    - postgresql
+    - mlflow_postgresql
 
   ml_model_dev_cpu:
     build: ./ml_model
@@ -181,30 +190,30 @@ services:
     # depends_on:
     # - mlflow
 
-  gpu_capable:
-    build:
-      context: ./Docker/dockerfiles/gpu
-    networks:
-    - ml_logging
-    - s3
-    volumes:
-    - ./ml_model/config:/app/ml_model/config
-    - ./ml_model/data:/app/ml_model/data
-    - ./ml_model/logs:/app/ml_model/logs
-    - ./ml_model/utils:/app/ml_model/utils
-    # - ~/.aws/:/root/.aws:ro # If AWS credentials need to be passed, or use environment
-    environment:
-    - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
-    - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
-    - MLFLOW_S3_ENDPOINT_URL=http://nginx:9000
-    command: >
-      sh -c "tail -f /dev/null"
-    deploy:
-      resources:
-        reservations:
-          devices:
-          - capabilities: ["nvidia-compute"]
-            driver: nvidia
+  # gpu_capable:
+  #   build:
+  #     context: ./Docker/dockerfiles/gpu
+  #   networks:
+  #   - ml_logging
+  #   - s3
+  #   volumes:
+  #   - ./ml_model/config:/app/ml_model/config
+  #   - ./ml_model/data:/app/ml_model/data
+  #   - ./ml_model/logs:/app/ml_model/logs
+  #   - ./ml_model/utils:/app/ml_model/utils
+  #   # - ~/.aws/:/root/.aws:ro # If AWS credentials need to be passed, or use environment
+  #   environment:
+  #   - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
+  #   - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
+  #   - MLFLOW_S3_ENDPOINT_URL=http://nginx:9000
+  #   command: >
+  #     sh -c "tail -f /dev/null"
+  #   deploy:
+  #     resources:
+  #       reservations:
+  #         devices:
+  #         - capabilities: ["nvidia-compute"]
+  #           driver: nvidia
 
   fastapi:
     build:
@@ -230,3 +239,44 @@ services:
     depends_on:
     - mlflow
     command:  conda run --no-capture-output -n fastapi uvicorn main:app --reload --host 0.0.0.0
+
+  data_postgresql:
+      container_name: data_postgres
+      image: postgres
+      restart: always
+      environment:
+        POSTGRES_USER: ${DATA_POSTGRES_USER}
+        POSTGRES_PASSWORD: ${DATA_POSTGRES_PASSWORD}
+        POSTGRES_DB: ${DATA_POSTGRES_DB}
+        PGDATA: /data/postgres
+      volumes:
+      - db-data:/data/postgres
+      ports:
+      - "5435:5432"
+      networks:
+      - data_management
+
+  data_api:
+    build:
+      context: ./data_management
+    container_name: data_fastapi_server
+    networks:
+      - data_management
+    volumes:
+    - ./data_management:/app/fastapi
+    ports:
+    - "8080:8000"
+    environment:
+        POSTGRES_USER: ${DATA_POSTGRES_USER}
+        POSTGRES_PASSWORD: ${DATA_POSTGRES_PASSWORD}
+        POSTGRES_DB: ${DATA_POSTGRES_DB}
+        POSTGRES_HOST: data_postgresql
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:8080/health" ]
+      interval: 30s
+      timeout: 20s
+      retries: 3
+    depends_on:
+    - data_postgresql
+    command:  conda run --no-capture-output -n fastapi uvicorn main:app --reload --host 0.0.0.0
+    # command: sh -c "tail -f /dev/null"
