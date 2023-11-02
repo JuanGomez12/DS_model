@@ -1,7 +1,7 @@
 networks:
   ml_logging:
     driver: bridge
-  postgres:
+  mlflow_postgres:
     driver: bridge
   s3:
     driver: bridge
@@ -88,7 +88,7 @@ services:
     ports:
     - "5432:5432"
     networks:
-    - postgres
+    - mlflow_postgres
 
   mlflow_pgadmin:
     container_name: mlflow_pgadmin
@@ -102,7 +102,7 @@ services:
     ports:
     - "5050:80"
     networks:
-    - postgres
+    - mlflow_postgres
 
   mlflow:
     restart: always
@@ -112,7 +112,7 @@ services:
     ports:
     - "5000:5000"
     networks:
-    - postgres
+    - mlflow_postgres
     - s3
     - ml_logging
     environment:
