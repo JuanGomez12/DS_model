@@ -1,6 +1,7 @@
 import logging
 import os
 
+import pandas as pd
 import psycopg2
 from utils.logger import get_logger
 
@@ -30,6 +31,7 @@ class PowerPlantDBManager:
             self.conn = psycopg2.connect(
                 host=self.host, database=self.database, user=self.user, password=self.password, port=self.port
             )
+        return self.conn
 
     def retrieve_column_names(self, table_name: str, ignore_id: bool = True) -> list:
         if self.table_exists(table_name):
@@ -70,6 +72,36 @@ class PowerPlantDBManager:
             cur.execute(query, args_list_ordered)
             cur.close()
             self.commit_connection()
+
+    def retrieve_data(self, table_name: str) -> dict:
+        if self.table_exists(table_name):
+            query = f"SELECT * from {table_name}"
+            df = pd.read_sql_query(query, self.generate_connection())
+            df = df.set_index("id")
+        else:
+            df = pd.DataFrame()
+        return df.to_dict(orient="index")
+
+    def __retrieve_data(self, sql_query) -> pd.DataFrame:
+        df = pd.read_sql_query(sql_query, self.generate_connection())
+        df = df.set_index("id")
+        return df
+
+    def retrieve_rows(self, table_name: str, limit: int = 100, offset: int = 0) -> dict:
+        if self.table_exists(table_name):
+            query = f"SELECT * from {table_name} LIMIT {limit} OFFSET {offset}"
+            df = self.__retrieve_data(query)
+        else:
+            df = pd.DataFrame()
+        return df.to_dict(orient="index")
+
+    def retrieve_row(self, table_name: str, row_id: int) -> dict:
+        if self.table_exists(table_name):
+            query = f"SELECT * from {table_name} WHERE id={row_id}"
+            df = self.__retrieve_data(query)
+        else:
+            df = pd.DataFrame()
+        return df.to_dict(orient="index")
 
     def table_exists(self, table_name: str) -> bool:
         table_existence_command = f"""
