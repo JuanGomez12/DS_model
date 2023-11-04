@@ -272,7 +272,7 @@ services:
         POSTGRES_DB: ${DATA_POSTGRES_DB}
         POSTGRES_HOST: data_postgresql
     healthcheck:
-      test: [ "CMD", "curl", "-f", "http://localhost:8080/health" ]
+      test: [ "CMD", "curl", "-f", "http://localhost:8000/health" ]
       interval: 30s
       timeout: 20s
       retries: 3
