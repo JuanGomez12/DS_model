@@ -34,23 +34,24 @@ class PowerPlantDBManager:
         return self.conn
 
     def retrieve_column_names(self, table_name: str, ignore_id: bool = True) -> list:
+        return list(self.retrieve_column_types(table_name, ignore_id).keys())
+
+    def retrieve_column_types(self, table_name: str, ignore_id: bool = True) -> dict:
         if self.table_exists(table_name):
             self.generate_connection()
-            query = f"Select * FROM {table_name} LIMIT 0"
-            query = f"""SELECT column_name
-            FROM information_schema.columns
-            WHERE table_schema = 'public' AND
-            table_name = '{table_name}';"""
+            query = (
+                f"""SELECT column_name, data_type FROM information_schema.columns WHERE table_name = '{table_name}';"""
+            )
             cur = self.conn.cursor()
             cur.execute(query)
             response = cur.fetchall()
             cur.close()
-            response = [resp[0] for resp in response]
+            # response = [resp[0] for resp in response]
             if ignore_id:
-                response = [resp for resp in response if "id" not in resp]
+                response = [resp for resp in response if resp[0] != "id"]
         else:
             response = []
-        return response
+        return dict(response)
 
     def commit_connection(self):
         if self.conn is not None:
