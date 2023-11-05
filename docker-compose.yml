@@ -147,6 +147,7 @@ services:
     networks:
     - ml_logging
     - s3
+    - data_management
     volumes:
     - ./ml_model:/app/ml_model
     # - ~/.aws/:/root/.aws:ro # If AWS credentials need to be passed, or use environment
@@ -157,6 +158,7 @@ services:
     command: conda run --no-capture-output -n ml_model python train.py
     depends_on:
      - mlflow
+     - data_api
 
   mlflow_test:
     build: ./ml_model
