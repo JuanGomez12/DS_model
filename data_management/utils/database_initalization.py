@@ -27,7 +27,20 @@ from utils.db_manager import PowerPlantDBManager
 
 logger = get_logger(Path(__file__).stem)
 TABLE_NAME = "powerplant"
-TABLE_VARIABLES = {"AT": "NUMERIC", "V": "NUMERIC", "AP": "NUMERIC", "RH": "NUMERIC", "PE": "NUMERIC"}
+TABLE_NAMES_CONVERSION = {
+    "AT": "temperature",
+    "V": "exhaust_vacuum",
+    "AP": "atmospheric_pressure",
+    "RH": "relative_humidity",
+    "PE": "electrical_output",
+}
+TABLE_VARIABLES = {
+    "temperature": "NUMERIC",
+    "exhaust_vacuum": "NUMERIC",
+    "atmospheric_pressure": "NUMERIC",
+    "relative_humidity": "NUMERIC",
+    "electrical_output": "NUMERIC",
+}
 
 
 def download_file(url: str, local_file_path: Path) -> Path:
@@ -72,9 +85,12 @@ class PowerPlantDBInitializer(PowerPlantDBManager):
 
 def create_tables(pplant_data_path: Union[Path, str]):
     df = pd.read_excel(str(pplant_data_path / "CCPP" / "Folds5x2_pp.xlsx"))
+    df = df.rename(columns=TABLE_NAMES_CONVERSION)
 
     try:
         powerplant_db_initializer = PowerPlantDBInitializer()
+        if powerplant_db_initializer.table_exists(TABLE_NAME):
+            powerplant_db_initializer.delete_table(TABLE_NAME)
         powerplant_db_initializer.create_table(TABLE_NAME, TABLE_VARIABLES)
 
         if powerplant_db_initializer.count_rows(TABLE_NAME) < 1:
@@ -83,7 +99,7 @@ def create_tables(pplant_data_path: Union[Path, str]):
                 powerplant_db_initializer.insert_row(TABLE_NAME, row[1].to_dict())
         else:
             logger.warning(
-                f"Database already contains {powerplant_db_initializer.count_rows()} rows of data, skipping initialization"
+                f"Database already contains {powerplant_db_initializer.count_rows(table_name=TABLE_NAME)} rows of data, skipping initialization"
             )
 
     except (Exception, psycopg2.DatabaseError) as error:
