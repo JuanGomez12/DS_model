@@ -3,14 +3,15 @@ import tempfile
 import time
 from pathlib import Path
 
+import pandas as pd
 from joblib import dump
 from mlflow.models.signature import infer_signature
 from modeling.data_preprocessor import DataPreprocessor
 from modeling.pipeline import ProcessingPipeline
-from sklearn.datasets import load_diabetes
 from sklearn.feature_selection import VarianceThreshold
 from sklearn.model_selection import train_test_split
 from sklearn.pipeline import Pipeline
+from utils.data_api_manager import DataAPIManager
 from utils.data_visualizer import DataVisualizer
 from utils.load_config import load_config_file
 from utils.logger import get_logger
@@ -31,6 +32,7 @@ plot_config = config["plot_config"]
 EXPERIMENT_NAME = config["mlflow"]["experiment_name"]
 mlflow.set_tracking_uri("http://mlflow_server:5000")
 mlflow.set_experiment(EXPERIMENT_NAME)
+DATA_API = "http://data_api:8000"
 
 # Enable autologging
 mlflow.sklearn.autolog(
@@ -39,12 +41,23 @@ mlflow.sklearn.autolog(
     log_models=config["mlflow"]["log_models"],
 )
 
-with mlflow.start_run():
-    diabetes_data = load_diabetes(return_X_y=True, as_frame=True)
-    target_feature = "target"
 
-    data = diabetes_data[0]
-    data[target_feature] = diabetes_data[1]
+with mlflow.start_run():
+    # Create the API manager
+    data_api_manager = DataAPIManager(DATA_API)
+
+    # Download the dataset. Here we would need to be careful if we're dealing with big data,
+    # as it would crash if we try to download it all
+
+    total_rows = data_api_manager.get_total_rows()
+    limit = 100
+
+    data_list = [data_api_manager.get_range(skip, limit) for skip in range(0, total_rows, limit)]
+    data = {key: value for dictionary in data_list for key, value in dictionary.items()}
+    data = pd.DataFrame.from_dict(data, orient="index")
+
+    target_feature = "electrical_output"
+    data_types = data_api_manager.get_feature_types()  # For setting numerical and categorical vars
 
     train, test = train_test_split(
         data,
@@ -87,7 +100,9 @@ with mlflow.start_run():
     with tempfile.TemporaryDirectory() as temp_dir:
         fmap_save_path = Path(temp_dir) / "feature_map.txt"
         fmap = ProcessingPipeline.create_feature_selection_map(
-            pipeline=pipeline, feature_selector_name="feature_selector", preprocessor_name="processing_pipeline"
+            pipeline=pipeline,
+            feature_selector_name="feature_selector",
+            preprocessor_name="processing_pipeline",
         )
         fmap.to_csv(str(fmap_save_path), sep="\t", header=False)
         mlflow.log_artifact(str(fmap_save_path), "Results")
