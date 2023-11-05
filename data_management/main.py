@@ -16,11 +16,11 @@ TABLE_NAME = "powerplant"
 
 
 class PowerPlantData(BaseModel):
-    AT: float
-    V: float
-    AP: float
-    RH: float
-    PE: float
+    temperature: float
+    exhaust_vacuum: float
+    atmospheric_pressure: float
+    relative_humidity: float
+    electrical_output: float
 
     def to_frame(self):
         data_dict = self.to_dict()
@@ -29,11 +29,11 @@ class PowerPlantData(BaseModel):
 
     def to_dict(self):
         return {
-            "AT": self.AT,
-            "V": self.V,
-            "AP": self.AP,
-            "RH": self.RH,
-            "PE": self.PE,
+            "temperature": self.temperature,
+            "exhaust_vacuum": self.exhaust_vacuum,
+            "atmospheric_pressure": self.atmospheric_pressure,
+            "relative_humidity": self.relative_humidity,
+            "electrical_output": self.electrical_output,
         }
 
 
