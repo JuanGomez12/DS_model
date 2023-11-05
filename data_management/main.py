@@ -45,7 +45,6 @@ def read_root():
 @app.post("/power_plant_data/add")
 async def add_power_plant_data(powerplant_data: PowerPlantData) -> dict:
     logger.info(f"Adding new row of data to Power Plant database")
-    # queries are not yet implemented, will add extra control and parameters for the model
     powerplant_db_manager = PowerPlantDBManager()
     powerplant_db_manager.insert_row(table_name=TABLE_NAME, args_dict=powerplant_data.to_dict())
     return {"data_added": powerplant_data.to_dict()}
@@ -53,25 +52,22 @@ async def add_power_plant_data(powerplant_data: PowerPlantData) -> dict:
 
 @app.get("/power_plant_data/total_rows")
 async def get_power_plant_rows() -> dict:
-    # queries are not yet implemented, will add extra control and parameters for the model
     powerplant_db_manager = PowerPlantDBManager()
     row_count = powerplant_db_manager.count_rows(table_name=TABLE_NAME)
     return {"rows": row_count}
 
 
-@app.get("/power_plant_data/{id}")
-async def get_plant(id: int) -> dict:
-    # queries are not yet implemented, will add extra control and parameters for the model
+@app.get("/power_plant_data/retrieve_range")
+async def get_plants(skip: int = 0, limit: int = 100) -> dict:
     powerplant_db_manager = PowerPlantDBManager()
-    row_info = powerplant_db_manager.retrieve_row(table_name=TABLE_NAME, row_id=id)
+    row_info = powerplant_db_manager.retrieve_rows(table_name=TABLE_NAME, limit=limit, offset=skip)
     return row_info
 
 
-@app.get("/power_plant_data/")
-async def get_plants(skip: int = 0, limit: int = 100) -> dict:
-    # queries are not yet implemented, will add extra control and parameters for the model
+@app.get("/power_plant_data/{id}")
+async def get_plant(id: int) -> dict:
     powerplant_db_manager = PowerPlantDBManager()
-    row_info = powerplant_db_manager.retrieve_rows(table_name=TABLE_NAME, limit=limit, offset=skip)
+    row_info = powerplant_db_manager.retrieve_row(table_name=TABLE_NAME, row_id=id)
     return row_info
 
 
