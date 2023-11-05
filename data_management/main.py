@@ -50,6 +50,20 @@ async def add_power_plant_data(powerplant_data: PowerPlantData) -> dict:
     return {"data_added": powerplant_data.to_dict()}
 
 
+@app.get("/power_plant_data/column_names")
+async def get_power_plant_column_names(return_id: bool = False) -> dict:
+    powerplant_db_manager = PowerPlantDBManager()
+    column_names = powerplant_db_manager.retrieve_column_names(table_name=TABLE_NAME, ignore_id=not return_id)
+    return {"column_names": column_names}
+
+
+@app.get("/power_plant_data/column_types")
+async def get_power_plant_column_types(return_id: bool = False) -> dict:
+    powerplant_db_manager = PowerPlantDBManager()
+    column_names = powerplant_db_manager.retrieve_column_types(table_name=TABLE_NAME, ignore_id=not return_id)
+    return column_names
+
+
 @app.get("/power_plant_data/total_rows")
 async def get_power_plant_rows() -> dict:
     powerplant_db_manager = PowerPlantDBManager()
