@@ -76,8 +76,10 @@ Defines the multi-container application to spin up or tear down all services wit
 - MLflow server
 - MinIO server
 - nginx for reverse proxying of MLflow AWS calls to MinIO.
-- PostgreSQL
-- pgadmin
-- training service based on CPU
-- training service based on GPU
-- fastapi server
+- PostgreSQL server for managing MLflow data.
+- pgadmin.
+- training service, CPU based.
+- development service, CPU-based
+- FastAPI server for managing ML models.
+- FastAPI server for managing the ML model training data.
+- PostgreSQL server for storing/reading the ML model training data.
