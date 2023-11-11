@@ -38,8 +38,9 @@ build_project_local:
 
 startup_project_local:
 	echo ${GREEN} Building project locally {RESTORE}
-	docker compose --env-file ./.envs/local/local.env up -d minio mlflow fastapi
+	docker compose --env-file ./.envs/local/local.env up -d minio mlflow fastapi data_api
 	docker compose --env-file ./.envs/local/local.env run --rm create_buckets
+	docker compose --env-file ./.envs/local/local.env run --rm data_api sh -c "conda run --no-capture-output -n fastapi python utils/database_initalization.py"
 	echo ${GREEN}Done{RESTORE}
 
 run_ml_model_local:

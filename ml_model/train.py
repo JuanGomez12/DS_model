@@ -3,18 +3,20 @@ import tempfile
 import time
 from pathlib import Path
 
+import pandas as pd
 from joblib import dump
 from mlflow.models.signature import infer_signature
 from modeling.data_preprocessor import DataPreprocessor
 from modeling.pipeline import ProcessingPipeline
-from sklearn.datasets import load_diabetes
 from sklearn.feature_selection import VarianceThreshold
 from sklearn.model_selection import train_test_split
 from sklearn.pipeline import Pipeline
+from utils.data_api_manager import DataAPIManager
 from utils.data_visualizer import DataVisualizer
 from utils.load_config import load_config_file
 from utils.logger import get_logger
 from utils.mlflow_utils import log_plotly_figure
+from utils.utils import POSTGRESQL_DATA_TYPES
 from xgboost import XGBRegressor
 
 import mlflow  # Pre-commit keeps thinking it's a local import
@@ -31,6 +33,8 @@ plot_config = config["plot_config"]
 EXPERIMENT_NAME = config["mlflow"]["experiment_name"]
 mlflow.set_tracking_uri("http://mlflow_server:5000")
 mlflow.set_experiment(EXPERIMENT_NAME)
+DATA_API = "http://data_api:8000"
+
 
 # Enable autologging
 mlflow.sklearn.autolog(
@@ -39,12 +43,27 @@ mlflow.sklearn.autolog(
     log_models=config["mlflow"]["log_models"],
 )
 
-with mlflow.start_run():
-    diabetes_data = load_diabetes(return_X_y=True, as_frame=True)
-    target_feature = "target"
 
-    data = diabetes_data[0]
-    data[target_feature] = diabetes_data[1]
+with mlflow.start_run():
+    # Create the API manager
+    data_api_manager = DataAPIManager(DATA_API)
+
+    # Download the dataset. Here we would need to be careful if we're dealing with big data,
+    # as it would crash if we try to download it all
+
+    total_rows = data_api_manager.get_total_rows()
+    limit = 100
+
+    data_list = [data_api_manager.get_range(skip, limit) for skip in range(0, total_rows, limit)]
+    data = {key: value for dictionary in data_list for key, value in dictionary.items()}
+    data = pd.DataFrame.from_dict(data, orient="index")
+
+    target_feature = "electrical_output"
+
+    # Convert data types
+    data_types = data_api_manager.get_feature_types()  # For setting numerical and categorical vars
+    data_types = {k: POSTGRESQL_DATA_TYPES.get(v, str) for k, v in data_types.items()}
+    data = data.astype(data_types)
 
     train, test = train_test_split(
         data,
@@ -87,28 +106,31 @@ with mlflow.start_run():
     with tempfile.TemporaryDirectory() as temp_dir:
         fmap_save_path = Path(temp_dir) / "feature_map.txt"
         fmap = ProcessingPipeline.create_feature_selection_map(
-            pipeline=pipeline, feature_selector_name="feature_selector", preprocessor_name="processing_pipeline"
+            pipeline=pipeline,
+            feature_selector_name="feature_selector",
+            preprocessor_name="processing_pipeline",
         )
         fmap.to_csv(str(fmap_save_path), sep="\t", header=False)
         mlflow.log_artifact(str(fmap_save_path), "Results")
 
-        image_save_path = Path(temp_dir) / "XGB_tree.png"
-        image_save_path = DataVisualizer.save_xgb_tree_to_file(
-            image_save_path=image_save_path,
-            xgb_estimator=pipeline.named_steps["estimator"],
-            num_trees=0,
-            fmap_save_path=fmap_save_path,
-        )
-        mlflow.log_artifact(image_save_path, "Figures")
+        for tree in [0, 5, 10, 100]:
+            image_save_path = Path(temp_dir) / f"XGB_tree_{str(tree).zfill(3)}.png"
+            image_save_path = DataVisualizer.save_xgb_tree_to_file(
+                image_save_path=image_save_path,
+                xgb_estimator=pipeline.named_steps["estimator"],
+                num_trees=tree,
+                fmap_save_path=fmap_save_path,
+            )
+            mlflow.log_artifact(image_save_path, "Figures")
 
     # Predicted vs Actual values Scatterplot
     fig = DataVisualizer.create_predict_actual_scatter(
         y_pred=y_pred,
         y_test=y_test,
-        color=X_test["age"],
+        color=X_test["temperature"],
         width=plot_config["width"],
         height=plot_config["height"],
-        color_label="Patient Age",
+        color_label=target_feature.replace("_", " ").title(),
     )
 
     # Save plot
