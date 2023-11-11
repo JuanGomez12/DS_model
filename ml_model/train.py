@@ -16,6 +16,7 @@ from utils.data_visualizer import DataVisualizer
 from utils.load_config import load_config_file
 from utils.logger import get_logger
 from utils.mlflow_utils import log_plotly_figure
+from utils.utils import POSTGRESQL_DATA_TYPES
 from xgboost import XGBRegressor
 
 import mlflow  # Pre-commit keeps thinking it's a local import
@@ -33,6 +34,7 @@ EXPERIMENT_NAME = config["mlflow"]["experiment_name"]
 mlflow.set_tracking_uri("http://mlflow_server:5000")
 mlflow.set_experiment(EXPERIMENT_NAME)
 DATA_API = "http://data_api:8000"
+
 
 # Enable autologging
 mlflow.sklearn.autolog(
@@ -57,7 +59,11 @@ with mlflow.start_run():
     data = pd.DataFrame.from_dict(data, orient="index")
 
     target_feature = "electrical_output"
+
+    # Convert data types
     data_types = data_api_manager.get_feature_types()  # For setting numerical and categorical vars
+    data_types = {k: POSTGRESQL_DATA_TYPES.get(v, str) for k, v in data_types.items()}
+    data = data.astype(data_types)
 
     train, test = train_test_split(
         data,
@@ -107,23 +113,24 @@ with mlflow.start_run():
         fmap.to_csv(str(fmap_save_path), sep="\t", header=False)
         mlflow.log_artifact(str(fmap_save_path), "Results")
 
-        image_save_path = Path(temp_dir) / "XGB_tree.png"
-        image_save_path = DataVisualizer.save_xgb_tree_to_file(
-            image_save_path=image_save_path,
-            xgb_estimator=pipeline.named_steps["estimator"],
-            num_trees=0,
-            fmap_save_path=fmap_save_path,
-        )
-        mlflow.log_artifact(image_save_path, "Figures")
+        for tree in [0, 5, 10, 100]:
+            image_save_path = Path(temp_dir) / f"XGB_tree_{str(tree).zfill(3)}.png"
+            image_save_path = DataVisualizer.save_xgb_tree_to_file(
+                image_save_path=image_save_path,
+                xgb_estimator=pipeline.named_steps["estimator"],
+                num_trees=tree,
+                fmap_save_path=fmap_save_path,
+            )
+            mlflow.log_artifact(image_save_path, "Figures")
 
     # Predicted vs Actual values Scatterplot
     fig = DataVisualizer.create_predict_actual_scatter(
         y_pred=y_pred,
         y_test=y_test,
-        color=X_test["age"],
+        color=X_test["temperature"],
         width=plot_config["width"],
         height=plot_config["height"],
-        color_label="Patient Age",
+        color_label=target_feature.replace("_", " ").title(),
     )
 
     # Save plot
