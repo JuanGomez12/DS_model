@@ -20,10 +20,10 @@ class DataAPIManager:
         url = self.build_url(f"retrieve_range?limit={limit}&skip={skip}")
         return self.get_response(url)
 
-    def get_feature_types(self) -> dict:
-        # TODO
-        pass
+    def get_feature_types(self, return_id: bool = False) -> dict:
+        url = self.build_url(f"column_types?return_id={return_id}")
+        return self.get_response(url)
 
-    def get_column_names(self) -> list:
-        # TODO
-        pass
+    def get_column_names(self, return_id: bool = False) -> dict:
+        url = self.build_url(f"column_names?return_id={return_id}")
+        return self.get_response(url)
