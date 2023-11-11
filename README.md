@@ -1,6 +1,10 @@
 # DS_model
-[![Linting](https://github.com/JuanGomez12/DS_model/actions/workflows/pre-commit.yml/badge.svg?branch=main&event=push)](https://github.com/JuanGomez12/DS_model/actions/workflows/pre-commit.yml)
-[![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)]( https://github.com/psf/black)
+
+<p align="center">
+<a href="https://github.com/JuanGomez12/DS_model/actions/workflows/pre-commit.yml"><img alt="Linting" src="https://github.com/JuanGomez12/DS_model/actions/workflows/pre-commit.yml/badge.svg?branch=main&event=push"></a>
+<a href="https://github.com/psf/black"><img alt="Code style: black" src="https://img.shields.io/badge/code%20style-black-000000.svg"></a>
+<a href="https://google.github.io/styleguide/pyguide.html#s3.8-comments-and-docstrings"><img alt="style: Google" src="https://img.shields.io/badge/%20style-google-3666d6.svg"></a>
+</p">
 
 Playground for messing around with different Data Science related tools
 
