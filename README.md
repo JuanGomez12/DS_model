@@ -27,6 +27,7 @@ What can then be accessed afterwards:
 - MinIO can be accessed by opening a web browser and accessing http://localhost:9001
   - The credentials for accessing the service can be found in .envs/local/local.env
 - FastAPI API for predicting using the implemented ML model can be accessed through http://localhost:8000. The documentation for it can be accessed in http://localhost:8000/docs or http://localhost:8000/redoc
+- FastAPI API for adding/checking the data being stored can be accessed through http://localhost:8080. The documentation for it can be accessed in http://localhost:8080/docs or http://localhost:8000/redoc
 
 
 ## Machine Learning Modeling
@@ -65,6 +66,9 @@ Creates and runs a MinIO server locally for storing S3 artifacts. It uses nginx 
 ## FastAPI
 ![Fast API Docs](<fastapi/images/Fast API Docs.png>)
 Web framework used to deploy the machine learning models. RESTful API to handle model prediction requests.
+
+Additional separate API used to push/read data to dedicated PostgreSQL service, using a RESTful API to handle creating new entries for the dataset as well as pulling data, feature names, etc.
+![Data Management API Docs](<data_management/images/data_management_api.png>)
 
 
 ## Docker Compose
