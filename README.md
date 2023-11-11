@@ -20,6 +20,7 @@ In order to run the code correctly, you need to:
 This will:
 - Create the required containers (minio, mlflow server, etc)
 - Create the mlflow bucket in MinIO in order to be able to store MLflow data.
+- Create a database containing the training data, including initializing the database with some example data.
 - Run an instance of the implemented ML model.
 
 What can then be accessed afterwards:
