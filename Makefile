@@ -32,13 +32,13 @@ coverage_report:
 
 build_project_local:
 	echo ${GREEN} Building project locally {RESTORE}
-	docker compose --env-file ./.envs/local/local.env build minio mlflow
+	docker compose --env-file ./.envs/local/local.env build minio mlflow_server
 	docker compose run --rm create_buckets
 	echo ${GREEN}Done{RESTORE}
 
 startup_project_local:
 	echo ${GREEN} Building project locally {RESTORE}
-	docker compose --env-file ./.envs/local/local.env up -d minio mlflow ml_model_api data_api
+	docker compose --env-file ./.envs/local/local.env up -d minio mlflow_server ml_model_api data_api
 	docker compose --env-file ./.envs/local/local.env run --rm create_buckets
 	docker compose --env-file ./.envs/local/local.env run --rm data_api sh -c "conda run --no-capture-output -n fastapi python utils/database_initalization.py"
 	echo ${GREEN}Done{RESTORE}

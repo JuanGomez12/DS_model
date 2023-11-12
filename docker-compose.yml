@@ -106,7 +106,7 @@ services:
 
   mlflow:
     restart: always
-    build: ./mlflow
+    build: ./mlflow_server
     container_name: mlflow_server
     # image: mlflow_server
     ports:
