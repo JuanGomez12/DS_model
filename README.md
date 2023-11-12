@@ -69,11 +69,11 @@ Creates and runs a MinIO server locally for storing S3 artifacts. It uses nginx 
 
 
 ## FastAPI
-![Fast API Docs](<fastapi/images/Fast API Docs.png>)
+![Fast API Docs](<ml_model_api/images/Fast API Docs.png>)
 Web framework used to deploy the machine learning models. RESTful API to handle model prediction requests.
 
 Additional separate API used to push/read data to dedicated PostgreSQL service, using a RESTful API to handle creating new entries for the dataset as well as pulling data, feature names, etc.
-![Data Management API Docs](<data_management/images/data_management_api.png>)
+![Data Management API Docs](<data_management_api/images/data_management_api.png>)
 
 
 ## Docker Compose

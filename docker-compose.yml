@@ -219,15 +219,15 @@ services:
   #         - capabilities: ["nvidia-compute"]
   #           driver: nvidia
 
-  fastapi:
+  ml_model_api:
     build:
-      context: ./fastapi
-    container_name: fastapi_server
+      context: ./ml_model_api
+    container_name: ml_model_fastapi_server
     networks:
       - ml_logging
       - s3
     volumes:
-    - ./fastapi:/app/fastapi
+    - ./ml_model_api:/app/fastapi
     - ./ml_model:/app/fastapi/ml_model
     ports:
     - "8000:8000"
@@ -262,12 +262,12 @@ services:
 
   data_api:
     build:
-      context: ./data_management
+      context: ./data_management_api
     container_name: data_fastapi_server
     networks:
       - data_management
     volumes:
-    - ./data_management:/app/fastapi
+    - ./data_management_api:/app/fastapi
     ports:
     - "8080:8000"
     environment:

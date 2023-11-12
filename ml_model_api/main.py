@@ -2,11 +2,11 @@ import sys
 from pathlib import Path
 
 import pandas as pd
+from fastapi import FastAPI
 from pydantic import BaseModel
 from utils.logger import get_logger
 
 import mlflow
-from fastapi import FastAPI
 from mlflow import MlflowClient
 
 sys.path.insert(0, "ml_model")

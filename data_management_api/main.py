@@ -1,11 +1,10 @@
 from pathlib import Path
 
 import pandas as pd
+from fastapi import FastAPI
 from pydantic import BaseModel
 from utils.db_manager import PowerPlantDBManager
 from utils.logger import get_logger
-
-from fastapi import FastAPI
 
 app = FastAPI()
 
