@@ -47,7 +47,7 @@ The current version includes the usage of an XGBoost model and a custom-made dat
 
 Uses MLflow for maintaining the machine learning lifecycle, including:
 ### Logging
-![MLFlow example run](mlflow/images/Run_example.png)
+![MLFlow example run](mlflow_server/images/Run_example.png)
 - Data: features and samples used for training the ML models
 - Configuration: pipeline configuration, including any preprocessing done before training.
 - Parameters: model training parameters.
@@ -55,15 +55,15 @@ Uses MLflow for maintaining the machine learning lifecycle, including:
 - Metrics: model training metrics and results.
 - Artifacts: additional files and images created while running the pipeline (e.g. result plots and graphs)
 ### Project/experiment based tracking
-![MLflow Experiments View](<mlflow/images/MLflow Experiments View.png>)
+![MLflow Experiments View](<mlflow_server/images/MLflow Experiments View.png>)
 ### Model registry
-![MLflow Model REgistry View](<mlflow/images/MLFlow Model Registry View.png>)
+![MLflow Model REgistry View](<mlflow_server/images/MLFlow Model Registry View.png>)
 - Store, organize and annotate existing models.
 - Deploy models in different environments (e.g. PySpark or through a REST API)
 
 
 ### MinIO instance for artifact storage
-![MinIO run locally](mlflow/images/MinIO%20local%20run.png)
+![MinIO run locally](mlflow_server/images/MinIO%20local%20run.png)
 
 Creates and runs a MinIO server locally for storing S3 artifacts. It uses nginx as a reverse proxy.
 
