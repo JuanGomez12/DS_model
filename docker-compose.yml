@@ -64,7 +64,7 @@ services:
     container_name: nginx
     hostname: nginx
     volumes:
-    - ./mlflow/nginx.conf:/etc/nginx/nginx.conf:ro
+    - ./mlflow_server/nginx.conf:/etc/nginx/nginx.conf:ro
     ports:
     - "9000:9000"
     - "9001:9001"
