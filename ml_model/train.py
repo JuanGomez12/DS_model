@@ -3,6 +3,7 @@ import tempfile
 import time
 from pathlib import Path
 
+import mlflow
 import pandas as pd
 from joblib import dump
 from mlflow.models.signature import infer_signature
@@ -18,8 +19,6 @@ from utils.logger import get_logger
 from utils.mlflow_utils import log_plotly_figure
 from utils.utils import POSTGRESQL_DATA_TYPES
 from xgboost import XGBRegressor
-
-import mlflow  # Pre-commit keeps thinking it's a local import
 
 logger = get_logger(Path(__file__).stem)
 

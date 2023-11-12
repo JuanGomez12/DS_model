@@ -1,11 +1,9 @@
 from pathlib import Path
 
-import pandas as pd
-from pydantic import BaseModel
+from fastapi import FastAPI
 from utils.db_manager import PowerPlantDBManager
 from utils.logger import get_logger
-
-from fastapi import FastAPI
+from utils.power_plant_data import PowerPlantData
 
 app = FastAPI()
 
@@ -13,28 +11,6 @@ app = FastAPI()
 logger = get_logger(Path(__file__).stem)
 
 TABLE_NAME = "powerplant"
-
-
-class PowerPlantData(BaseModel):
-    temperature: float
-    exhaust_vacuum: float
-    atmospheric_pressure: float
-    relative_humidity: float
-    electrical_output: float
-
-    def to_frame(self):
-        data_dict = self.to_dict()
-        df = pd.DataFrame(data_dict, index=[0])
-        return df
-
-    def to_dict(self):
-        return {
-            "temperature": self.temperature,
-            "exhaust_vacuum": self.exhaust_vacuum,
-            "atmospheric_pressure": self.atmospheric_pressure,
-            "relative_humidity": self.relative_humidity,
-            "electrical_output": self.electrical_output,
-        }
 
 
 @app.get("/")
