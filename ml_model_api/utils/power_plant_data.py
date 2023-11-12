@@ -7,7 +7,7 @@ class PowerPlantData(BaseModel):
     exhaust_vacuum: float
     atmospheric_pressure: float
     relative_humidity: float
-    electrical_output: float
+    # electrical_output: float
 
     def to_frame(self) -> pd.DataFrame:
         data_dict = self.to_dict()
@@ -20,5 +20,5 @@ class PowerPlantData(BaseModel):
             "exhaust_vacuum": self.exhaust_vacuum,
             "atmospheric_pressure": self.atmospheric_pressure,
             "relative_humidity": self.relative_humidity,
-            "electrical_output": self.electrical_output,
+            # "electrical_output": self.electrical_output,
         }
