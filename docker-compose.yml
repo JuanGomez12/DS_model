@@ -229,7 +229,6 @@ services:
     volumes:
     - ./ml_model_api:/app/fastapi
     - ./ml_model:/app/fastapi/ml_model
-    - ./data_management_api/utils/power_plant_data.py:/app/fastapi/utils/power_plant_data.py
     ports:
     - "8000:8000"
     environment:
