@@ -27,31 +27,31 @@ test_debug:
 	conda run --no--capture--output -n test coverage html -d /app/test/coverage_report
 
 coverage_report:
-	echo ${GREEN}Running unit tests...{RESTORE}
+	echo Running unit tests...
 	docker compose run --rm test bash -c "make test_debug"
 
 build_project_local:
-	echo ${GREEN} Building project locally {RESTORE}
-	docker compose --env-file ./.envs/local/local.env build minio mlflow_server
+	echo Building project locally
+	docker compose --env-file ./.envs/local/local.env build minio mlflow
 	docker compose run --rm create_buckets
-	echo ${GREEN}Done{RESTORE}
+	echo Done
 
 startup_project_local:
-	echo ${GREEN} Building project locally {RESTORE}
-	docker compose --env-file ./.envs/local/local.env up -d minio mlflow_server ml_model_api data_api
+	echo  Building project locally
+	docker compose --env-file ./.envs/local/local.env up -d minio mlflow ml_model_api data_api
 	docker compose --env-file ./.envs/local/local.env run --rm create_buckets
 	docker compose --env-file ./.envs/local/local.env run --rm data_api sh -c "conda run --no-capture-output -n fastapi python utils/database_initalization.py"
-	echo ${GREEN}Done{RESTORE}
+	echo Done
 
 run_ml_model_local:
-	echo ${GREEN} Running ML model locally {RESTORE}
+	echo  Running ML model locally
 	docker compose --env-file ./.envs/local/local.env up ml_model_train_cpu
-	echo ${GREEN}Done{RESTORE}
+	echo Done
 
 deploy_local:
 	cp /d/.dev/test_ds/DS_model/.envs/local/local.env .env
 	make build_project_local
 	make startup_project_local
-	echo ${GREEN} Wait 5 seconds for everything to be set up correctly {RESTORE}
+	echo Wait 5 seconds for everything to be set up correctly...
 	sleep 5
 	make run_ml_model_local
