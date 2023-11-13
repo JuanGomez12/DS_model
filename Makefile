@@ -55,3 +55,8 @@ deploy_local:
 	echo ${SPACER} Wait 5 seconds for everything to be set up correctly... ${SPACER}
 	sleep 5
 	make run_ml_model_local
+
+rebuild_all_local:
+# Warning, this will delete all of the data in the databases as well as in MinIO
+	docker compose down -v
+	make deploy_local
