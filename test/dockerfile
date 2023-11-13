@@ -39,4 +39,4 @@ RUN rm env.yml
 
 RUN conda init
 
-WORKDIR /app/ml_model
+WORKDIR /app/testing
