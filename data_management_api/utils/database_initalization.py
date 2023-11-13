@@ -44,6 +44,15 @@ TABLE_VARIABLES = {
 
 
 def download_file(url: str, local_file_path: Path) -> Path:
+    """Downloads a file using streaming.
+
+    Args:
+        url (str): Path to where the file is located
+        local_file_path (Path): Path to where to save the file to
+
+    Returns:
+        Path: Path to where the file was saved to.
+    """
     with requests.get(url, stream=True) as r:
         r.raise_for_status()
         with open(local_file_path, "wb") as f:
@@ -60,6 +69,13 @@ class PowerPlantDBInitializer(PowerPlantDBManager):
         super().__init__(logger)
 
     def create_table(self, table_name: str, columns: dict):
+        """Creates a table if it doesn't exist already using the arguments passed for
+        the name and the columns.
+
+        Args:
+            table_name (str): String to use for the table name
+            columns (dict): Dictionary containing the keys which will be the column names and the values being their respective data type.
+        """
         if not self.table_exists(table_name):
             self.logger.info(f"Creating table: {table_name}")
             create_command = f"""CREATE TABLE {table_name} (id SERIAL PRIMARY KEY, """
@@ -73,6 +89,11 @@ class PowerPlantDBInitializer(PowerPlantDBManager):
             self.logger.info(f"Table: {table_name} created successfully")
 
     def delete_table(self, table_name: str):
+        """Deletes a table from the database.
+
+        Args:
+            table_name (str): Table to delete
+        """
         self.logger.info(f"Deleting table: {table_name}")
         delete_command = f"""DROP TABLE {table_name}"""
         self.generate_connection()
@@ -84,6 +105,12 @@ class PowerPlantDBInitializer(PowerPlantDBManager):
 
 
 def create_tables(pplant_data_path: Union[Path, str]):
+    """Reads the power plant data and reinitializes the database tables with the power
+    plant data.
+
+    Args:
+        pplant_data_path (Union[Path, str]): Path to the power plant data directory.
+    """
     df = pd.read_excel(str(pplant_data_path / "CCPP" / "Folds5x2_pp.xlsx"))
     df = df.rename(columns=TABLE_NAMES_CONVERSION)
 
@@ -103,7 +130,7 @@ def create_tables(pplant_data_path: Union[Path, str]):
             )
 
     except (Exception, psycopg2.DatabaseError) as error:
-        print(error)
+        logger.exception(error)
     finally:
         if powerplant_db_initializer.conn is not None:
             powerplant_db_initializer.close_connection()

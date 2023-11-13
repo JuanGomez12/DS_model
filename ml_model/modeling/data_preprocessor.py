@@ -40,8 +40,8 @@ class DataPreprocessor(BaseEstimator, TransformerMixin):
         return super().fit_transform(X, y, **fit_params)
 
     def transform(self, X: ndarray, y: Optional[ndarray] = None) -> ndarray:
-        """Transforms the data. This function is used to conform to the sklearn API.
-        The data transformation includes data cleaning, and if enabled when instantiating
+        """Transforms the data. This function is used to conform to the sklearn API. The
+        data transformation includes data cleaning, and if enabled when instantiating
         the class, outlier removal.
 
         Args:

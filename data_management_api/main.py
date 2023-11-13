@@ -15,7 +15,7 @@ TABLE_NAME = "powerplant"
 
 @app.get("/")
 def read_root():
-    return {"Basic FastAPI API for data management"}
+    return {"message": "Basic FastAPI API for data management"}
 
 
 @app.post("/power_plant_data/add")
